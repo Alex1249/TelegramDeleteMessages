@@ -37,6 +37,9 @@ cmd_filter = filters.create(prefix_filter)
 
 @app.on_message(cmd_filter & filters.me)
 async def delete_messages(client: Client, msg: Message):
+    if msg.reply_to_message_id:
+        await app.delete_messages(msg.chat.id, [msg.id, msg.reply_to_message_id])
+        return
     count = re.findall(prefix + r'\s?(\d+)', msg.text.lower())
     if count:
         count = int(count[0]) + 1
@@ -59,7 +62,7 @@ async def delete_messages(client: Client, msg: Message):
 
 
 @app.on_message(filters.command(commands="нст", prefixes="") & filters.me)
-async def edit_prefix(bot: Client, msg: Message):
+async def edit_prefix(сlient: Client, msg: Message):
     global prefix
     res = re.findall(r"нст (.+)", msg.text.lower())
     if res:
@@ -69,7 +72,7 @@ async def edit_prefix(bot: Client, msg: Message):
         with open("config.json", "w", encoding="utf-8") as f:
             json.dump(data, f, indent=4, ensure_ascii=False)
     else:
-        await msg.edit(f"Укажите нвый префикс")
+        await msg.edit(f"Укажите новый префикс")
     
 app.run()
 
